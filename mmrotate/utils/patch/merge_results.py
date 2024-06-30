@@ -112,12 +112,15 @@ def merge_results_by_nms(results: SampleList, offsets: np.ndarray,
         pred_instances.append(pred_inst)
 
     instances = InstanceData.cat(pred_instances)
-    _, keeps = batched_nms(
-        boxes=instances.bboxes,
-        scores=instances.scores,
-        idxs=instances.labels,
-        nms_cfg=nms_cfg)
-    merged_instances = instances[keeps]
+    if instances:
+        _, keeps = batched_nms(
+            boxes=instances.bboxes,
+            scores=instances.scores,
+            idxs=instances.labels,
+            nms_cfg=nms_cfg)
+        merged_instances = instances[keeps]
+    else:
+        merged_instances = instances
 
     merged_result = DetDataSample()
     # update items like gt_instances, ignore_instances
